@@ -2,21 +2,17 @@
 Bits for integers.
 """
 class bitPile:
-    def __init__(self,integer,size=0): #TODO add so you can set the size
+    def __init__(self,integer,size=0):
         self.num=integer
-        self.bits=[]
-        for bit in bin(integer)[2:]:
-            if bit=="1":
-                self.bits.append(1)
-            else:
-                self.bits.append(0)
-        for bit in range(len(self.bits),size):
-            self.bits.append(0)
+        numberBin=bin(integer)
+        self.bits=[0]*max(size,len(numberBin)-2)
+        for i in range(2,len(numberBin)):
+            self.bits[-i-1]=int(numberBin[i])
         self.length=len(self.bits)
 
     def printBits(self):
         print("Number:",self.num)
-        print("Binary Length",self.length,"\nBinary: ",end="")
+        print("Binary Length:",self.length,"\nBinary: ",end="")
         for bit in self.bits:
             print(bit,end="")
         print()
@@ -74,14 +70,20 @@ class bitPile:
     forcefully resizes the number of bits
     anchor: 0 -left 1- right
     """
-    def resize(self,newlength,anchor=0): #TODO add size increase
+    def resize(self,newlength,anchor=0): #TODO add size increase and change this one completely
         if anchor==1:
             del self.bits[:self.length-newlength]
         elif anchor==0:
             del self.bits[newlength:]
-        self.newlength
+        self.length=newlength
 
-    #TODO add append and insert bits
+    """
+    append a bit at the end #TODO remake this into insert
+    """
+    def append(self,value):
+        self.bits.append(value)
+        self.num=self.num*2+value
+        self.length+=1
         
 
 """
