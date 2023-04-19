@@ -33,7 +33,7 @@ class bitPile:
     """
     def flipBit(self,index=None,position=None): #TODO add pos based on input like 2,4,8
         if index is None:
-            index=self.length-position-1
+            index=self.length-position-1 #TODO if position is none it will break
         if self.bits[index]:
             self.bits[index]=0
             self.num-=2**(self.length-index-1)
