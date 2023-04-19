@@ -2,7 +2,7 @@
 Bits for integers.
 """
 class bitPile:
-    def __init__(self,integer):
+    def __init__(self,integer,size=0): #TODO add so you can set the size
         self.num=integer
         self.bits=[]
         for bit in bin(integer)[2:]:
@@ -10,6 +10,8 @@ class bitPile:
                 self.bits.append(1)
             else:
                 self.bits.append(0)
+        for bit in range(len(self.bits),size):
+            self.bits.append(0)
         self.length=len(self.bits)
 
     def printBits(self):
@@ -78,6 +80,8 @@ class bitPile:
         elif anchor==0:
             del self.bits[newlength:]
         self.newlength
+
+    #TODO add append and insert bits
         
 
 """
