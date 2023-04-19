@@ -6,15 +6,18 @@ Obviously this library is really inefficient and is written in python, and shoul
 ## Documentation
 
 Toybinary has 3 custom datatypes:
+
 `toybinary.bitPile()` *~: work in progress*
+
 `toybinary.bitFinePile()` *X: not ready yet*
+
 `toybinary.bitMountain()` *X: not ready yet*
 
 ### BitPile
 
 BitPile is designed for smaller numbers, I tested it with 128 bit number, but I am not sure how much more python can handle without issues.
 
-```
+```python
 import toybinary #for now the import is manual
 
 myNum=toybinary.bitPile(1234,20) #myNum will be number 1234 stored in 20 bits
