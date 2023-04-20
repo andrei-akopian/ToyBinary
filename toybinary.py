@@ -6,8 +6,8 @@ class bitPile:
         self.num=integer
         numberBin=bin(integer)
         self.bits=[0]*max(size,len(numberBin)-2)
-        for i in range(2,len(numberBin)):
-            self.bits[-i-1]=int(numberBin[i])
+        for i in range(0,len(numberBin)-2):
+            self.bits[-i-1]=int(numberBin[-i-1])
         self.length=len(self.bits)
 
     def printBits(self):
