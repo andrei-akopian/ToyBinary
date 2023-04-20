@@ -25,21 +25,21 @@ myNum.flipBit(4) #flip the 4th bit
 
 #now lets see the result my typing
 myNum.printBits()
-#> Number: 34002 
+#> Number: 34002
 #> Binary Length: 20 
-#> Binary: 00001000100101100100
+#> Binary: 00001000010011010010
 #              ^here we flipped a bit, the number also changed
 
-myNum.setbit(17,0) #lets set 17th bit to 0
-print(myNum[17]) #you can also index the bits
+myNum.setbit(18,0) #lets set 18th bit to 0
+print(myNum[18]) #you can also index the bits
 
 #but I don't recomend to modify bits through indexing, 
 #beacuse the internal number value will break. You will have to use
 print(myNum.calc_num()) #will recompute the base 10 value of the bits
 myNum.printBits()
-#> Number: 35172
+#> Number: 34000 <# it went from 34002 to 34000, the 2 got removed as it was second to last
 #> Binary Length: 20 
-#> Binary: 00001000100101100100
+#> Binary: 00001000010011010000
 ```
 
 ### BitFinePile

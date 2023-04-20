@@ -1,6 +1,7 @@
 """
 Bits for integers.
 """
+#FIXME due to the bug in the init, a lot of other stuff might be wrong
 class bitPile:
     def __init__(self,integer,size=0):
         self.num=integer
@@ -31,13 +32,11 @@ class bitPile:
     """
     Flips a bit, returns the new value
     """
-    def flipBit(self,index=None,position=None): #TODO add pos based on input like 2,4,8
-        if index is None:
-            index=self.length-position-1 #TODO if position is none it will break
+    def flipBit(self,index): #TODO add pos based on input like 2,4,8
         if self.bits[index]:
             self.bits[index]=0
             self.num-=2**(self.length-index-1)
-        else:
+        else:   
             self.bits[index]=1
             self.num+=2**(self.length-index-1)
         return self.bits[index]
@@ -56,14 +55,16 @@ class bitPile:
     Sets a bit to a given value.
     returns past value
     """
-    def setbit(self,index,value):
+    def setbit(self,index,value): #TODO add pos based on input like 2,4,8
         if self.bits[index]==value:
             return value
         elif value: #1
-            self.num+=2**index
+            self.bits[index]=value
+            self.num+=2**(self.length-index-1)
             return 0
         else: #0
-            self.num-=2**index
+            self.bits[index]=value
+            self.num-=2**(self.length-index-1)
             return 1
 
     """
