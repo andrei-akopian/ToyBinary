@@ -144,9 +144,11 @@ anb64map="=0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+"
 def anb64encode(bitObject): #FIXME make it work with a bitlist
     output=""
     #calculate length #FIXME the 6-standdarization is a mess
-    length=bitPile(bitObject.length,size=math.ceil(bitObject.length/6))
-    for i in range(0,length.length,6):
-        output+=anb64map[calc_num(length.bits[i:i+6])]
+    length=bin(bitObject.length)[2:]
+    if len(length)%6>0:
+        length="0"*(6-len(length)%6)+length
+    for i in range(0,len(length),6):
+        output+=anb64map[int(length[i:i+6],2)]
     output+="/"
     #main content
     for i in range(0,bitObject.length,6):
