@@ -1,3 +1,7 @@
+#python3.11.2
+#imports
+import math
+
 """
 Bits for integers.
 """
@@ -44,8 +48,9 @@ class bitPile:
     """
     Recalculates and returns the value of the bitPile number.
     """
-    def calc_num(self):
+    def calibrate(self):
         self.num=0
+        self.length=len(self.bits)
         for i,bit in enumerate(self.bits):
             if bit:
                 self.num+=2**(self.length-i-1)
@@ -98,3 +103,75 @@ Load of bits
 """
 class bitMountain:
     pass
+
+"""
+bitlist to number
+"""
+def calc_num(bitlist,extendTo=0): #TODO add and an "Extend in front"
+    #could have just multiplied by 2**(extendTo-len(bitlist)) at the end
+    num=0
+    extendTo=max(extendTo,len(bitlist))
+    for bitI in range(len(bitlist)):
+        if bitlist[bitI]:
+            num+=2**(extendTo-bitI-1)
+    return num
+
+"""
+number to bitlist
+"""
+def numToBits(number,size=0):
+    numberBin=bin(number)
+    bitlist=[0]*max(size,len(numberBin)-2)
+    for i in range(0,len(numberBin)-2):
+        bitlist[-i-1]=int(numberBin[-i-1])
+    return bitlist
+
+"""
+Conversions of binary into a anb64 based on base64 but with extra features.
+Encoding
+Input: one of the toybinary datatypes
+Output: anb64 string
+
+Decoding:
+Input: one of the toybinary datatypes
+Output: anb64 string
+
+standart: =0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+ 
+seperator: /
+"""
+
+anb64map="=0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+"
+def anb64encode(bitObject): #FIXME make it work with a bitlist
+    output=""
+    #calculate length #FIXME the 6-standdarization is a mess
+    length=bitPile(bitObject.length,size=math.ceil(bitObject.length/6))
+    for i in range(0,length.length,6):
+        output+=anb64map[calc_num(length.bits[i:i+6])]
+    output+="/"
+    #main content
+    for i in range(0,bitObject.length,6):
+        output+=anb64map[calc_num(bitObject.bits[i:i+6],extendTo=6)]
+    return output
+
+"""
+if outputtype bitObject, pass your own bitObject
+"""
+def anb64decode(string,outputType="bitlist",bitObject=None):
+    #TODO make this more efficient, maybe add proper names
+    bitlist=[]
+    #figure out the length
+    length=0
+    seperator=string.find("/")
+    for symbI in range(0,seperator):
+        length=length*64+anb64map.find(string[symbI])
+    #figure out everything
+    for symbI in range(seperator+1,len(string)):
+        bitlist.extend(numToBits(anb64map.find(string[symbI]),size=6))
+    del bitlist[length:]
+    #output
+    if outputType=="bitlist":
+        return bitlist
+    elif outputType=="bitObject":
+        bitObject.bits=bitlist
+        bitObject.calibrate()
+        return bitObject
