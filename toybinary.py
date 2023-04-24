@@ -2,11 +2,13 @@
 #imports
 import math
 
-"""
-Bits for integers.
-"""
 #FIXME due to the bug in the init, a lot of other stuff might be wrong
+#TODO make sure all functions support expos (2**expos indexing)
+#TODO remove self.length, it's useless
 class bitPile:
+    """
+    Bits for integers.
+    """
     def __init__(self,integer,size=0):
         self.num=integer
         numberBin=bin(integer)
@@ -22,33 +24,52 @@ class bitPile:
             print(bit,end="")
         print()
     
-    """
-    returns bitvalue at a given index, changing might break num. 
-    Use setbit(index, value) instead.
-    """
     def __getitem__(self,index):
+        """
+        returns bitvalue at a given index, changing might break num. 
+        Use setbit(index, value) instead.
+        Slices also work: self.bits[4:9]
+        """
+        if type(index)==tuple:
+            return self.bits[index[0]:index[1]]
         return self.bits[index]
 
 
     def __len__(self):
         return self.length
 
-    """
-    Flips a bit, returns the new value
-    """
-    def flipBit(self,index): #TODO add pos based on input like 2,4,8
-        if self.bits[index]:
-            self.bits[index]=0
-            self.num-=2**(self.length-index-1)
-        else:   
-            self.bits[index]=1
-            self.num+=2**(self.length-index-1)
-        return self.bits[index]
+    def flipBit(self,index=None,expos=None): #TODO add pos based on input like 2,4,8
+        """
+        Flips a bit, returns the new value
+        expos is the inverse of index and points to the bit corersponding to 2**expos
 
-    """
-    Recalculates and returns the value of the bitPile number.
-    """
+        if index: treat index
+        if expos: treat expos
+        if both: treat slice
+        if neither: flip all
+        """ #FIXME fix all of this
+        if index==None:
+            if expos!=None:
+                if self.bits[self.length-expos-1]:
+                    self.bits[self.length-expos-1]=0
+                    self.num-=2**expos
+                else:   
+                    self.bits[self.length-expos-1]=1
+                    self.num+=2**expos
+                return self.bits[self.length-expos-1]
+        elif expos==None:
+            if self.bits[index]:
+                self.bits[index]=0
+                self.num-=2**(self.length-index-1)
+            else:   
+                self.bits[index]=1
+                self.num+=2**(self.length-index-1)
+            return self.bits[index]
+
     def calibrate(self):
+        """
+        Recalculates and returns the value of the bitPile number.
+        """
         self.num=0
         self.length=len(self.bits)
         for i,bit in enumerate(self.bits):
@@ -56,11 +77,11 @@ class bitPile:
                 self.num+=2**(self.length-i-1)
         return self.num
 
-    """
-    Sets a bit to a given value.
-    returns past value
-    """
     def setbit(self,index,value): #TODO add pos based on input like 2,4,8
+        """
+        Sets a bit to a given value.
+        returns past value
+        """
         if self.bits[index]==value:
             return value
         elif value: #1
@@ -72,21 +93,28 @@ class bitPile:
             self.num-=2**(self.length-index-1)
             return 1
 
-    """
-    forcefully resizes the number of bits
-    anchor: 0 -left 1- right
-    """
-    def resize(self,newlength,anchor=0): #TODO add size increase and change this one completely
-        if anchor==1:
-            del self.bits[:self.length-newlength]
-        elif anchor==0:
-            del self.bits[newlength:]
-        self.length=newlength
+    def resize(self,left,right):
+        """
+        forcefully resizes the list
+        right and left can ne negative accordingly
+        there is no protection
+        returns new list length
+        """
+        if left>0:
+            self.bits[:0]=[0]*left
+        if right>0:
+            self.bits.extend([0]*right)
+        if left<0:
+            del self.bits[:left]
+        if right<0:
+            del self.bits[right+1:]
+        
+        self.length=len(self.bits)
 
-    """
-    append a bit at the end #TODO remake this into insert
-    """
     def append(self,value):
+        """
+        append a bit at the end #TODO remake this into insert
+        """
         self.bits.append(value)
         self.num=self.num*2+value
         self.length+=1
