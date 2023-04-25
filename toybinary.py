@@ -43,21 +43,18 @@ class bitPile:
         Flips a bit, returns the new value
         expos is the inverse of index and points to the bit corersponding to 2**expos
 
-        if index: treat index
-        if expos: treat expos
-        if both: treat slice
+        if index: flip index
+        if expos: flip expos
+        if both: flip slice
         if neither: flip all
         """ #FIXME fix all of this
-        if index==None:
-            if expos!=None:
-                if self.bits[self.length-expos-1]:
-                    self.bits[self.length-expos-1]=0
-                    self.num-=2**expos
-                else:   
-                    self.bits[self.length-expos-1]=1
-                    self.num+=2**expos
-                return self.bits[self.length-expos-1]
-        elif expos==None:
+        if type(index)==int and type(expos)==int:
+            for i in range(index,expos):
+                if self.bits[i]:
+                    self.bits[i]=0
+                else:
+                    self.bits[i]=1
+        elif type(index)==int:
             if self.bits[index]:
                 self.bits[index]=0
                 self.num-=2**(self.length-index-1)
@@ -65,6 +62,20 @@ class bitPile:
                 self.bits[index]=1
                 self.num+=2**(self.length-index-1)
             return self.bits[index]
+        elif type(expos)==int:
+            if self.bits[self.length-expos-1]:
+                self.bits[self.length-expos-1]=0
+                self.num-=2**expos
+            else:   
+                self.bits[self.length-expos-1]=1
+                self.num+=2**expos
+            return self.bits[self.length-expos-1]
+        else:
+            for i in range(len(self.bits)):
+                if self.bits[i]:
+                    self.bits[i]=0
+                else:
+                    self.bits[i]=1
 
     def calibrate(self):
         """
@@ -72,9 +83,10 @@ class bitPile:
         """
         self.num=0
         self.length=len(self.bits)
-        for i,bit in enumerate(self.bits):
-            if bit:
+        for i in range(len(self.bits)):
+            if self.bits[i]:
                 self.num+=2**(self.length-i-1)
+            self.bits[i]=int(self.bits[i])
         return self.num
 
     def setbit(self,index,value): #TODO add pos based on input like 2,4,8
@@ -93,23 +105,30 @@ class bitPile:
             self.num-=2**(self.length-index-1)
             return 1
 
-    def resize(self,left,right):
-        """
-        forcefully resizes the list
+    def resize(self,left,right,filler=0):
+        """resizes the list
+
         right and left can ne negative accordingly
-        there is no protection
+        filler is the type of bit (0 or 1) the extra spaces will be filled with
+        there is no protection against cutting away to much etc.
         returns new list length
+
+            bitPile.bits=[0,0,1,1,0]
+            bitPile.resize(-2,2,1) #bitPile.bits => [1,1,0,1,1]
         """
-        if left>0:
-            self.bits[:0]=[0]*left
-        if right>0:
-            self.bits.extend([0]*right)
         if left<0:
-            del self.bits[:left]
+            self.num=self.num%(2**(len(self.bits)+left))
+            del self.bits[:-left]
         if right<0:
-            del self.bits[right+1:]
-        
+            self.num=self.num//(2**right)
+            del self.bits[-right+1:]
+        if left>0:
+            self.bits[:0]=[filler]*left
+        if right>0:
+            self.num=self.num*(2**right)
+            self.bits.extend([filler]*right)
         self.length=len(self.bits)
+        return len(self.bits)
 
     def append(self,value):
         """

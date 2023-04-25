@@ -44,6 +44,13 @@ myNum.printBits()
 #> Number: 34000 <# it went from 34002 to 34000, the 2 got removed as it was second to last
 #> Binary Length: 20 
 #> Binary: 00001000010011010000
+
+#now we want to resize the number of bits in the number
+myNum.resize(-6,2) #remove 6 leading bits, and add 2 at the end
+myNum.printBits()
+#> Number: 4928
+#> Binary Length: 16 
+#> Binary: 0001001101000011
 ```
 
 ### BitFinePile
