@@ -4,7 +4,6 @@ import math
 
 #FIXME due to the bug in the init, a lot of other stuff might be wrong
 #TODO make sure all functions support expos (2**expos indexing)
-#TODO remove self.length, it's useless
 class bitPile:
     """
     Bits for integers.
@@ -15,11 +14,10 @@ class bitPile:
         self.bits=[0]*max(size,len(numberBin)-2)
         for i in range(0,len(numberBin)-2):
             self.bits[-i-1]=int(numberBin[-i-1])
-        self.length=len(self.bits)
 
     def printBits(self):
         print("Number:",self.num)
-        print("Binary Length:",self.length,"\nBinary: ",end="")
+        print("Binary Length:",len(self.bits),"\nBinary: ",end="")
         for bit in self.bits:
             print(bit,end="")
         print()
@@ -36,7 +34,7 @@ class bitPile:
 
 
     def __len__(self):
-        return self.length
+        return len(self.bits)
 
     def flipBit(self,index=None,expos=None): #TODO add pos based on input like 2,4,8
         """
@@ -57,19 +55,19 @@ class bitPile:
         elif type(index)==int:
             if self.bits[index]:
                 self.bits[index]=0
-                self.num-=2**(self.length-index-1)
+                self.num-=2**(len(self.bits)-index-1)
             else:   
                 self.bits[index]=1
-                self.num+=2**(self.length-index-1)
+                self.num+=2**(len(self.bits)-index-1)
             return self.bits[index]
         elif type(expos)==int:
-            if self.bits[self.length-expos-1]:
-                self.bits[self.length-expos-1]=0
+            if self.bits[len(self.bits)-expos-1]:
+                self.bits[len(self.bits)-expos-1]=0
                 self.num-=2**expos
             else:   
-                self.bits[self.length-expos-1]=1
+                self.bits[len(self.bits)-expos-1]=1
                 self.num+=2**expos
-            return self.bits[self.length-expos-1]
+            return self.bits[len(self.bits)-expos-1]
         else:
             for i in range(len(self.bits)):
                 if self.bits[i]:
@@ -82,10 +80,9 @@ class bitPile:
         Recalculates and returns the value of the bitPile number.
         """
         self.num=0
-        self.length=len(self.bits)
         for i in range(len(self.bits)):
             if self.bits[i]:
-                self.num+=2**(self.length-i-1)
+                self.num+=2**(len(self.bits)-i-1)
             self.bits[i]=int(self.bits[i])
         return self.num
 
@@ -98,11 +95,11 @@ class bitPile:
             return value
         elif value: #1
             self.bits[index]=value
-            self.num+=2**(self.length-index-1)
+            self.num+=2**(len(self.bits)-index-1)
             return 0
         else: #0
             self.bits[index]=value
-            self.num-=2**(self.length-index-1)
+            self.num-=2**(len(self.bits)-index-1)
             return 1
 
     def resize(self,left,right,filler=0):
@@ -127,16 +124,22 @@ class bitPile:
         if right>0:
             self.num=self.num*(2**right)
             self.bits.extend([filler]*right)
-        self.length=len(self.bits)
         return len(self.bits)
 
     def append(self,value):
         """
-        append a bit at the end #TODO remake this into insert
+        append a bit at the end
         """
         self.bits.append(value)
         self.num=self.num*2+value
-        self.length+=1
+
+    def insert(self,index,value):
+        """
+        Typical instert function
+        """
+        self.bits.insert(index, value)
+        #TODO the math for self.num is to complex, so I just use calibrate 
+        self.calibrate()
         
 
 """
@@ -154,8 +157,15 @@ class bitMountain:
 """
 bitlist to number
 """
-def calc_num(bitlist,extendTo=0): #TODO add and an "Extend in front"
-    #could have just multiplied by 2**(extendTo-len(bitlist)) at the end
+def calc_num(bitlist,extendTo=0):
+    '''calculates the base10 value of a sequence of bits
+
+    nvip
+    bitlist=list of booleans
+    extendTo=pretends there were extra bits at the end
+
+    just loops through, adds 2^postition to num
+    '''
     num=0
     extendTo=max(extendTo,len(bitlist))
     for bitI in range(len(bitlist)):
@@ -183,23 +193,15 @@ Decoding:
 Input: one of the toybinary datatypes
 Output: anb64 string
 
-standart: =0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+ 
-seperator: /
+standard: =0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+ 
 """
 
-anb64map="=0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+"
+anb64map="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 def anb64encode(bitObject): #FIXME make it work with a bitlist
     output=""
-    #calculate length #FIXME the 6-standdarization is a mess
-    length=bin(bitObject.length)[2:]
-    if len(length)%6>0:
-        length="0"*(6-len(length)%6)+length
-    for i in range(0,len(length),6):
-        output+=anb64map[int(length[i:i+6],2)]
-    output+="/"
-    #main content
-    for i in range(0,bitObject.length,6):
+    for i in range(0,len(bitObject.bits),6):
         output+=anb64map[calc_num(bitObject.bits[i:i+6],extendTo=6)]
+    output+=str(len(bitObject.bits)%6)
     return output
 
 """
@@ -208,15 +210,12 @@ if outputtype bitObject, pass your own bitObject
 def anb64decode(string,outputType="bitlist",bitObject=None):
     #TODO make this more efficient, maybe add proper names
     bitlist=[]
-    #figure out the length
-    length=0
-    seperator=string.find("/")
-    for symbI in range(0,seperator):
-        length=length*64+anb64map.find(string[symbI])
     #figure out everything
-    for symbI in range(seperator+1,len(string)):
+    for symbI in range(len(string)-1):
         bitlist.extend(numToBits(anb64map.find(string[symbI]),size=6))
-    del bitlist[length:]
+    lenMod=int(string[-1])
+    if lenMod>0:
+        del bitlist[lenMod-6:]
     #output
     if outputType=="bitlist":
         return bitlist

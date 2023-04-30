@@ -22,7 +22,7 @@ And 2 supporting functions: `calc_num` and `numToBits`
 BitPile is designed for smaller numbers, I tested it with 128 bit number, but I am not sure how much more python can handle without issues.
 
 ```python
-import toybinary #for now the import is manual
+import toybinary #for now the import is manual from a nearby directory
 
 myNum=toybinary.bitPile(1234,20) #myNum will be number 1234 stored in 20 bits
 myNum.flipBit(4) #flip the 4th bit
@@ -59,35 +59,26 @@ When I get to work on it, it will be similar to BitPile, but focused more toward
 
 ### bitMountain
 
-When I get to it, it will be a raw sequence of bits without any kind of number or math. Designed for very large amount of bits (eg. a text file in binary). Unlike bitPiles that are tied to numbers, the mountain is centered around strings, files and conversions.
+When I get to it, it will be a raw sequence of bits without any kind of number or math. Designed for very large amount of bits (eg. a text file in binary). Unlike bitPiles that are tied to numbers, the mountain is centered around strings, files and manipulation.
 
 ### anBase64
 
-anBase64 encoding format is inspired by base64, but doesn't loose any information, thus is able to store binary of some unknown length. It is also designed to store additional metadata.
+anBase64 is based on base64 encoding, but preserves length - so no additional data is added when usign it. This comes at the cost of 1 extra character at the end of the string.
 
-anb64 uses this table: `=0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+`
-Each symbol represents the 6bit sequence of its index.
-
-There is also an aditional special symbol: `/`
-It acts as a seperator for metadata.
-
-anb64 encodings look like this: `LeNgTh/BiNaRyDaTa`
-
-First the length is encoded normally as a number. eg. if the length is `63 (111111)` then it will become `+/` since + has the 63rd index which corresponds to `111111`
-
-Then the binary is decoded normally with potential zeros at the end.
+anb64 encodings look like this: `BiNaRyDaTa%` where `%` a number of binarydata length mod 6 in plain text.
+I made this decidion because someone decoding the string with a normal base 64 decoder will assume that the end was a bunch of giberish and will still be able to recreate the orginal data with minimal issues. When decoding ASCII, first 6 characters are techinical (NULL, EOT, etc.) and will probably be manually removed by the user.
 
 Here are some examples:
 
-`101011000000110001100100` -> `N/g=mZ`
+`111011111100000101000100000011000000011000100100011101110010100` -> `78FEDAYkdyg3`
 
-`110000110011110101110001101010110101010110010111010110100100101100010101001011010001` -> `0J/loqmfqLMLZhKAG`
+`1110110101111011111000111100100101111111010101011010000100100000` -> `7XvjyX9VoSA4`
 
-`1010010101010101001100110011111010101110100011010001010001001110` -> `0=/eKJoEfvC43t`
+`11001111111000100110101110010111100000100101101011110100011001111000010101101011` -> `z+Jrl4Ja9GeFaw2`
 
-`10000010110010110100111100100010111110010001` -> `h/VhiE7kZF`
+`1111111011010011` -> `/tM4`
 
-`1000101010100000101100111100101111000110000110000010100000000011011000111011010111010111100000111001110111111010100010` -> `0r/Xf1onxNN9=CYiST2cUf7`
+`10011000111110011110010101100` -> `mPnlY5`
 
 How to use encode and decode:
 
