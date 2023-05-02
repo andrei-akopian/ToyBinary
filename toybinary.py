@@ -4,7 +4,7 @@ import math
 
 #FIXME due to the bug in the init, a lot of other stuff might be wrong
 #TODO make sure all functions support expos (2**expos indexing)
-class bitPile:
+class bitBox:
     """
     Bits for integers.
     """
@@ -36,44 +36,57 @@ class bitPile:
     def __len__(self):
         return len(self.bits)
 
-    def flipBit(self,index=None,expos=None): #TODO add pos based on input like 2,4,8
-        """
-        Flips a bit, returns the new value
-        expos is the inverse of index and points to the bit corersponding to 2**expos
+    def flipBit(self,index=None,expos=None): #TODO just recalculate expos into index
+        """Flips a bit, returns the new value
+
+        expos is the inverse of index and points to the bit coresponding to 2**expos
+        not input validation
 
         if index: flip index
+            return new value
         if expos: flip expos
-        if both: flip slice
+            return new value
+        if both: flip slice ([4:7] is [4,6] interval notation)
+            return (1 to 0, 0 to 1)
         if neither: flip all
-        """ #FIXME fix all of this
-        if type(index)==int and type(expos)==int:
+            return (1 to 0, 0 to 1)
+        """
+        #both FIXME num is not calculated
+        if index!=None and expos!=None:
+            count0=0
+            count1=0
             for i in range(index,expos):
                 if self.bits[i]:
+                    count0+=1
                     self.bits[i]=0
                 else:
+                    count1+=0
                     self.bits[i]=1
-        elif type(index)==int:
-            if self.bits[index]:
-                self.bits[index]=0
-                self.num-=2**(len(self.bits)-index-1)
-            else:   
-                self.bits[index]=1
-                self.num+=2**(len(self.bits)-index-1)
-            return self.bits[index]
-        elif type(expos)==int:
-            if self.bits[len(self.bits)-expos-1]:
-                self.bits[len(self.bits)-expos-1]=0
-                self.num-=2**expos
-            else:   
-                self.bits[len(self.bits)-expos-1]=1
-                self.num+=2**expos
-            return self.bits[len(self.bits)-expos-1]
-        else:
+            return (count0,count1)
+        #neither
+        elif index==None and expos==None:
+            count0=0
+            count1=0
             for i in range(len(self.bits)):
                 if self.bits[i]:
+                    count0+=1
                     self.bits[i]=0
                 else:
+                    count1+=1
                     self.bits[i]=1
+            return (count0,count1)
+        #either
+        elif expos==None:
+            expos=len(self.bits)-index-1
+        elif index==None:
+            index=len(self.bits)-expos-1
+        if self.bits[index]:
+            self.bits[index]=0
+            self.num-=2**(expos)
+        else:   
+            self.bits[index]=1
+            self.num+=2**(expos)
+        return self.bits[index]
 
     def calibrate(self):
         """
@@ -143,15 +156,15 @@ class bitPile:
         
 
 """
-Bits for floats.
+Bits for floats and other suffesticated math
 """
-class bitFinePile:
+class bitBin:
     pass
 
 """
 Load of bits
 """
-class bitMountain:
+class bitShelf:
     pass
 
 """
