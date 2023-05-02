@@ -10,10 +10,13 @@ class bitBox:
     """
     def __init__(self,integer,size=0):
         self.num=integer
+        self.count=0 #TODO add counter of 1s in the number
         numberBin=bin(integer)
         self.bits=[0]*max(size,len(numberBin)-2)
         for i in range(0,len(numberBin)-2):
             self.bits[-i-1]=int(numberBin[-i-1])
+            if self.bits[-i-1]==1:
+                self.count+=1
 
     def printBits(self):
         print("Number:",self.num)
@@ -33,7 +36,7 @@ class bitBox:
         return self.bits[index]
 
 
-    def __len__(self):
+    def __len__(self): #TODO it actually works with len(self) so I can replace all lens(self.bits)
         return len(self.bits)
 
     def flipBit(self,index=None,expos=None): #TODO just recalculate expos into index
@@ -58,10 +61,12 @@ class bitBox:
             for i in range(index,expos):
                 if self.bits[i]:
                     count0+=1
+                    self.num-=2**(len(self)-index-1)
                     self.bits[i]=0
                 else:
                     count1+=0
                     self.bits[i]=1
+                    self.num+=2**(len(self)-index-1)
             return (count0,count1)
         #neither
         elif index==None and expos==None:
@@ -74,6 +79,7 @@ class bitBox:
                 else:
                     count1+=1
                     self.bits[i]=1
+            self.num=2**len(self)-self.num
             return (count0,count1)
         #either
         elif expos==None:
@@ -93,9 +99,11 @@ class bitBox:
         Recalculates and returns the value of the bitPile number.
         """
         self.num=0
+        self.count=0
         for i in range(len(self.bits)):
             if self.bits[i]:
                 self.num+=2**(len(self.bits)-i-1)
+                self.count+=1
             self.bits[i]=int(self.bits[i])
         return self.num
 
@@ -153,6 +161,56 @@ class bitBox:
         self.bits.insert(index, value)
         #TODO the math for self.num is to complex, so I just use calibrate 
         self.calibrate()
+
+    def add(self,value=1,bitObject=None): #TODO add bitobject addition
+        for plus1 in range(value): #TODO there has to be a better way
+            buffer=1
+            self.num+=1
+            for b in range(len(self.bits)-1,-1,-1):
+                if self.bits[b]+buffer==2:
+                    self.bits[b]=0
+                    buffer=1
+                elif self.bits[b]+buffer==0:
+                    break
+                else:
+                    self.bits[b]=1
+                    buffer=0
+        return self.num
+        
+    def subtract(self,value):
+        for minus1 in range(value): #TODO there has to be a better way
+            self.num-=1
+            for b in range(len(self.bits)-1,-1,-1):
+                if self.bits[b]==1:
+                    self.bits[b]=0
+                    break
+                else:
+                    self.bits[b]=1
+        return self.num
+
+    def nextPermutation(self): #TODO add number calculation
+        counter=0
+        for b in range(len(self.bits)-1,-1,-1):
+            if b==0:
+                self.flipBit(len(self)-self.count,len(self))
+                if self.count==len(self):
+                    self.count=0
+                else:
+                    self.count+=1
+                    self.flipBit(0,self.count)
+                    counter=0
+                break
+            if self.bits[b]==1:
+                counter+=1
+            elif self.bits[b]==0 and self.bits[b-1]==1:
+                self.bits[b]=1
+                self.bits[b-1]=0
+                self.flipBit(len(self)-counter,len(self))
+                self.flipBit(b+1,b+counter+1)
+                counter=0
+                break
+
+
         
 
 """
