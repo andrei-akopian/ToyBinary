@@ -198,7 +198,6 @@ class bitBox:
                 else:
                     self.count+=1
                     self.flipBit(0,self.count)
-                    counter=0
                 break
             if self.bits[b]==1:
                 counter+=1
@@ -207,8 +206,8 @@ class bitBox:
                 self.bits[b-1]=0
                 self.flipBit(len(self)-counter,len(self))
                 self.flipBit(b+1,b+counter+1)
-                counter=0
                 break
+        return self.count
 
 
         
