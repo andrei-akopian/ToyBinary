@@ -87,3 +87,7 @@ How to use encode and decode:
 `toybinary.anb64decode(string,outputType= "bitlist" or "bitObject", bitObject=yourBitObject)` 
 
 string is the anb64 string, output is a bitlist ([0,1,0,0,1,0...etc.]) by defaoult but can be set to bitObject (bitBox/bitBin/bitShelf), in this case you will have to pass it an already existing object (or just pass it `toybinary.bitPile(0,0)`). I recomend using bitShelf if the encoding is very large.
+
+
+## TODO
+- Add consistent naming

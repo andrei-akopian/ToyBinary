@@ -4,6 +4,9 @@ import math
 
 #FIXME due to the bug in the init, a lot of other stuff might be wrong
 #TODO make sure all functions support expos (2**expos indexing)
+#TODO rename all self.count to self.count1 and make self.count0
+#TODO add internal object names
+
 class bitBox:
     """
     Bits for integers.
@@ -222,7 +225,41 @@ class bitBin:
 Load of bits
 """
 class bitShelf:
-    pass
+    def __init__(self):
+        self.bits=[]
+        self.count=0
+
+    def printBits(self):
+        print("Binary Length:",len(self.bits),"\nBinary: ",end="")
+        for bit in self.bits:
+            print(bit,end="")
+        print()
+    
+    def fromString(self,string):
+        for c in string:
+            self.bits.extend(numToBits(ord(c),8))
+        return len(self)
+
+    def toString(self):
+        output=""
+        for i in range(0,len(self.bits),8):
+            output+=chr(calc_num(self.bits[i:i+8]))
+        return output
+
+    def __getitem__(self,index):
+        """
+        returns bitvalue at a given index, changing might break num. 
+        Use setbit(index, value) instead.
+        Slices also work: self.bits[4:9]
+        """
+        if type(index)==tuple:
+            return self.bits[index[0]:index[1]]
+        return self.bits[index]
+
+
+    def __len__(self): #TODO it actually works with len(self) so I can replace all lens(self.bits) everywhere else (not here)
+        return len(self.bits)
+    
 
 """
 bitlist to number
