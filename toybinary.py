@@ -328,5 +328,4 @@ def anb64decode(string,outputType="bitlist",bitObject=None):
         return bitlist
     elif outputType=="bitObject":
         bitObject.bits=bitlist
-        bitObject.calibrate()
         return bitObject

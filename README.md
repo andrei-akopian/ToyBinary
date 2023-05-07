@@ -66,7 +66,7 @@ When I get to it, it will be a raw sequence of bits without any kind of number o
 anBase64 is based on base64 encoding, but preserves length - so no additional data is added when usign it. This comes at the cost of 1 extra character at the end of the string.
 
 anb64 encodings look like this: `BiNaRyDaTa%` where `%` a number of binarydata length mod 6 in plain text.
-I made this decidion because someone decoding the string with a normal base 64 decoder will assume that the end was a bunch of giberish and will still be able to recreate the orginal data with minimal issues. When decoding ASCII, first 6 characters are techinical (NULL, EOT, etc.) and will probably be manually removed by the user.
+I made this decidion because someone decoding the string with a normal base 64 decoder will assume that the end was a bunch of giberish and will still be able to recreate the orginal data with minimal issues.
 
 Here are some examples:
 
